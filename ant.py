@@ -332,8 +332,6 @@ class Ant:
                 del new_path, new_path_distance
                 new_path = temp_path
                 new_path_distance = temp_distance
-
-                # 设置i_start
                 i_start = (i_start + 1) % (new_path.count(0) - 1)
                 i_start = max(i_start, 1)
             else:

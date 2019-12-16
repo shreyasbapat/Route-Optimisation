@@ -46,10 +46,6 @@ class BasicACO:
             path_queue_for_figure.put(PathMessage(None, None))
 
     def _basic_aco(self, path_queue_for_figure: Queue):
-        """
-
-        :return:
-        """
         start_time_total = time.time()
 
         start_iteration = 0
@@ -119,10 +115,6 @@ class BasicACO:
         )
 
     def select_next_index(self, ant):
-        """
-        :param ant:
-        :return:
-        """
         current_index = ant.current_index
         index_to_visit = ant.index_to_visit
 
@@ -142,12 +134,6 @@ class BasicACO:
 
     @staticmethod
     def stochastic_accept(index_to_visit, transition_prob):
-        """
-        轮盘赌
-        :param index_to_visit: a list of N index (list or tuple)
-        :param transition_prob:
-        :return: selected index
-        """
         # calculate N and max fitness value
         N = len(index_to_visit)
 
