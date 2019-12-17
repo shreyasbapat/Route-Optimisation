@@ -1,6 +1,7 @@
 import numpy as np
 import copy
-
+import requests
+import json
 
 class Node:
     def __init__(
@@ -32,7 +33,7 @@ class Node:
 class VrptwGraph:
     def __init__(self, file_path, rho=0.1):
         super()
-        self.node_num, self.nodes, self.node_dist_mat, self.vehicle_num, self.vehicle_capacity = self.create_from_file(
+        self.node_num, self.nodes, self.node_dist_mat, self.vehicle_num, self.vehicle_capacity, self.max_dist = self.create_from_file(
             file_path
         )
 
@@ -65,9 +66,10 @@ class VrptwGraph:
             count = 1
             for line in f:
                 if count == 5:
-                    vehicle_num, vehicle_capacity = line.split()
+                    vehicle_num, vehicle_capacity, max_dist = line.split()
                     vehicle_num = int(vehicle_num)
                     vehicle_capacity = int(vehicle_capacity)
+                    max_dist = int(max_dist)
                 elif count >= 10:
                     node_list.append(line.split())
                 count += 1
@@ -94,11 +96,36 @@ class VrptwGraph:
                 node_dist_mat[i][j] = VrptwGraph.calculate_dist(node_a, node_b)
                 node_dist_mat[j][i] = node_dist_mat[i][j]
 
-        return node_num, nodes, node_dist_mat, vehicle_num, vehicle_capacity
+        return node_num, nodes, node_dist_mat, vehicle_num, vehicle_capacity, max_dist
 
     @staticmethod
     def calculate_dist(node_a, node_b):
         return np.linalg.norm((node_a.x - node_b.x, node_a.y - node_b.y))
+
+    def calculate_actual_dist(node_a, node_b):
+        """Returns real-world distance in km between points denoted by lat long of Nodes, 
+        returns 100000 if valid path isn't found
+        """
+        with open('apikey', 'r') as f: 
+            api_key = f.read().strip()
+
+        url = 'https://maps.googleapis.com/maps/api/distancematrix/json'
+
+        origin = node_a.x,node_a.y
+        dest = node_b.x,node_b.y
+
+        params = {
+            'key': api_key,
+            'origins': origin,
+            'destinations': dest
+        }
+
+        r = requests.get(url, params=params)
+        x = r.json()
+
+        if x['rows'][0]['elements'][0]['status'] == 'OK':
+            return x['rows'][0]['elements'][0]['distance']['value']/1000
+        else: return 100000
 
     def local_update_pheromone(self, start_ind, end_ind):
         self.pheromone_mat[start_ind][end_ind] = (1 - self.rho) * self.pheromone_mat[
@@ -120,6 +147,7 @@ class VrptwGraph:
         current_time = 0
         travel_distance = 0
         travel_path = [0]
+        actual_distance = 0
 
         if max_vehicle_num is None:
             max_vehicle_num = self.node_num

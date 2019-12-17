@@ -36,12 +36,6 @@ class MultipleAntColonySystem:
 
     @staticmethod
     def stochastic_accept(index_to_visit, transition_prob):
-        """
-        轮盘赌
-        :param index_to_visit: a list of N index (list or tuple)
-        :param transition_prob:
-        :return: selected index
-        """
         # calculate N and max fitness value
         N = len(index_to_visit)
 
@@ -328,11 +322,6 @@ class MultipleAntColonySystem:
     def _multiple_ant_colony_system(
         self, path_queue_for_figure: MPQueue, file_to_write_path=None
     ):
-        """
-        调用acs_time 和 acs_vehicle进行路径的探索
-        :param path_queue_for_figure:
-        :return:
-        """
         if file_to_write_path is not None:
             file_to_write = open(file_to_write_path, "w")
         else:
