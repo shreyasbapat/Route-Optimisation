@@ -103,6 +103,9 @@ class VrptwGraph:
         return np.linalg.norm((node_a.x - node_b.x, node_a.y - node_b.y))
 
     def calculate_actual_dist(node_a, node_b):
+        """Returns real-world distance in km between points denoted by lat long of Nodes, 
+        returns 100000 if valid path isn't found
+        """
         with open('apikey', 'r') as f: 
             api_key = f.read().strip()
 
