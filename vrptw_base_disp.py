@@ -42,14 +42,14 @@ class VrptwGraph:
             self.vehicle_capacity,
             self.max_dist,
         ) = self.create_from_file(file_path)
-        print("No. of allowed vehicles: ", self.vehicle_num)
+
         self.rho = rho
 
         (
             self.nnh_travel_path,
             self.init_pheromone_val,
-            self.vehicle_num,
-        ) = self.nearest_neighbor_heuristic(max_vehicle_num=self.vehicle_num)
+            _,
+        ) = self.nearest_neighbor_heuristic()
         self.init_pheromone_val = 1 / (self.init_pheromone_val * self.node_num)
 
         self.pheromone_mat = (
@@ -95,15 +95,15 @@ class VrptwGraph:
             for item in node_list
         )
 
-        node_dist_mat = np.loadtxt('dists.txt')
-        # node_dist_mat = np.zeros((node_num, node_num))
-        # for i in range(node_num):
-        #     node_a = nodes[i]
-        #     node_dist_mat[i][i] = 1e-8
-        #     for j in range(i + 1, node_num):
-        #         node_b = nodes[j]
-        #         node_dist_mat[i][j] = VrptwGraph.calculate_dist(node_a, node_b)
-        #         node_dist_mat[j][i] = node_dist_mat[i][j]
+        # node_dist_mat = np.loadtxt('dists.txt')
+        node_dist_mat = np.zeros((node_num, node_num))
+        for i in range(node_num):
+            node_a = nodes[i]
+            node_dist_mat[i][i] = 1e-8
+            for j in range(i + 1, node_num):
+                node_b = nodes[j]
+                node_dist_mat[i][j] = VrptwGraph.calculate_dist(node_a, node_b)
+                node_dist_mat[j][i] = node_dist_mat[i][j]
 
         return node_num, nodes, node_dist_mat, vehicle_num, vehicle_capacity, max_dist
 
@@ -137,7 +137,7 @@ class VrptwGraph:
 
         while len(index_to_visit) > 0 and max_vehicle_num > 0:
             nearest_next_index = self._cal_nearest_next_index(
-                index_to_visit, current_index, current_load, current_time, travel_distance
+                index_to_visit, current_index, current_load, current_time
             )
 
             if nearest_next_index is None:
@@ -171,16 +171,13 @@ class VrptwGraph:
         return travel_path, travel_distance, vehicle_num
 
     def _cal_nearest_next_index(
-        self, index_to_visit, current_index, current_load, current_time, travel_distance
+        self, index_to_visit, current_index, current_load, current_time
     ):
         nearest_ind = None
         nearest_distance = None
 
         for next_index in index_to_visit:
             if current_load + self.nodes[next_index].demand > self.vehicle_capacity:
-                continue
-
-            if travel_distance + self.node_dist_mat[current_index][next_index] > self.max_dist:
                 continue
 
             dist = self.node_dist_mat[current_index][next_index]

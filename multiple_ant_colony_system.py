@@ -226,7 +226,7 @@ class MultipleAntColonySystem:
         global_best_path = None
         global_best_distance = None
 
-        current_path, current_path_distance, _ = new_graph.nearest_neighbor_heuristic(
+        current_path, current_path_distance, vehicle_num = new_graph.nearest_neighbor_heuristic(
             max_vehicle_num=vehicle_num
         )
 
@@ -335,7 +335,7 @@ class MultipleAntColonySystem:
         path_found_queue = Queue()
 
         self.best_path, self.best_path_distance, self.best_vehicle_num = (
-            self.graph.nearest_neighbor_heuristic()
+            self.graph.nearest_neighbor_heuristic(self.graph.vehicle_num)
         )
         path_queue_for_figure.put(PathMessage(self.best_path, self.best_path_distance))
 

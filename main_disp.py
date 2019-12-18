@@ -1,10 +1,10 @@
-from vrptw_base import VrptwGraph
+from vrptw_base_disp import VrptwGraph
 from multiple_ant_colony_system import MultipleAntColonySystem
 
 
 if __name__ == "__main__":
-    file_path = "c102.txt"
-    ants_num = 10
+    file_path = "c101.txt"
+    ants_num = 5
     beta = 2
     q0 = 0.1
     show_figure = True

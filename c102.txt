@@ -1,10 +1,10 @@
-C102 
+C102
 
-VEHICLE 
+VEHICLE
 NUMBER     CAPACITY    KMS/TRIP
-25        200         1000 
+20            30         90
 
-CUSTOMER 
+CUSTOMER
 CUST NO.  XCOORD.   YCOORD.    DEMAND   READY TIME  DUE DATE   SERVICE   TIME
 
    0      12.7971706      77.4238823      0      0      835      0
