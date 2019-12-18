@@ -189,15 +189,16 @@ class VrptwGraph:
 
             if (
                 current_time
-                + dist
+                + dist * 3
                 + wait_time
-                + service_time
                 + self.node_dist_mat[next_index][0]
                 > self.nodes[0].due_time
             ):
+                print("##############################################")
                 continue
 
-            if current_time + dist > self.nodes[next_index].due_time:
+            if current_time + dist * 3 > self.nodes[next_index].due_time:
+                print("**********************************************")
                 continue
 
             if (

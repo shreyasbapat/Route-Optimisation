@@ -15,9 +15,9 @@ def input_data():
     no_vehicles = 25
     capacity = 200
     max_dist = 1000
-    due_date = 835
+    due_date = 1900
     service_time = 90
-    
+
     stops = list()
 
     file_path = "c102.txt"
@@ -110,6 +110,7 @@ def input_data():
                     + "\n"
                 )
                 count += 1
+                print("Written")
 
 
     url = "https://maps.googleapis.com/maps/api/distancematrix/json"
@@ -136,3 +137,8 @@ def input_data():
             for j in range(stops_num):
                 f.write(str(node_dist_mat[i][j]) + "    ")
             f.write('\n')
+
+
+
+if __name__=="__main__":
+    input_data()
