@@ -142,7 +142,11 @@ class VrptwGraph:
 
             if nearest_next_index is None:
                 travel_distance += self.node_dist_mat[current_index][0]
-
+                if current_load < 0.85 * self.vehicle_capacity:
+                    while travel_path[-1] != 0:
+                        travel_path.pop()
+                    travel_path.pop()
+                    print("##############################################")
                 current_load = 0
                 current_time = 0
                 travel_path.append(0)
@@ -165,6 +169,11 @@ class VrptwGraph:
                 travel_path.append(nearest_next_index)
                 current_index = nearest_next_index
         travel_distance += self.node_dist_mat[current_index][0]
+        if current_load < 0.85 * self.vehicle_capacity:
+            while travel_path[-1] != 0:
+                travel_path.pop()
+            travel_path.pop()
+            print("##############################################")
         travel_path.append(0)
 
         vehicle_num = travel_path.count(0) - 1
@@ -189,16 +198,16 @@ class VrptwGraph:
 
             if (
                 current_time
-                + dist * 3
+                + dist * 3                  ### Assuming the speed to be 20kmph, hence to convert dist to minutes, dist / 20 * 60
                 + wait_time
                 + self.node_dist_mat[next_index][0]
                 > self.nodes[0].due_time
             ):
-                print("##############################################")
+                # print("##############################################")
                 continue
 
             if current_time + dist * 3 > self.nodes[next_index].due_time:
-                print("**********************************************")
+                # print("**********************************************")
                 continue
 
             if (
