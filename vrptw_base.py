@@ -130,6 +130,7 @@ class VrptwGraph:
         current_load = 0
         current_time = 0
         travel_distance = 0
+        current_distance = 0
         travel_path = [0]
 
         if max_vehicle_num is None:
@@ -137,7 +138,7 @@ class VrptwGraph:
 
         while len(index_to_visit) > 0 and max_vehicle_num > 0:
             nearest_next_index = self._cal_nearest_next_index(
-                index_to_visit, current_index, current_load, current_time, travel_distance
+                index_to_visit, current_index, current_load, current_time, current_distance
             )
 
             if nearest_next_index is None:
@@ -146,8 +147,10 @@ class VrptwGraph:
                     while travel_path[-1] != 0:
                         travel_path.pop()
                     travel_path.pop()
+                    travel_distance -= current_distance
                     print("##############################################")
                 current_load = 0
+                current_distance = 0
                 current_time = 0
                 travel_path.append(0)
                 current_index = 0
@@ -162,10 +165,11 @@ class VrptwGraph:
                 )
                 service_time = self.nodes[nearest_next_index].service_time
 
-                current_time += dist + wait_time + service_time
+                current_time += dist + wait_time
                 index_to_visit.remove(nearest_next_index)
 
                 travel_distance += self.node_dist_mat[current_index][nearest_next_index]
+                current_distance += self.node_dist_mat[current_index][nearest_next_index]
                 travel_path.append(nearest_next_index)
                 current_index = nearest_next_index
         travel_distance += self.node_dist_mat[current_index][0]
@@ -173,6 +177,7 @@ class VrptwGraph:
             while travel_path[-1] != 0:
                 travel_path.pop()
             travel_path.pop()
+            travel_distance -= current_distance
             print("##############################################")
         travel_path.append(0)
 
@@ -180,7 +185,7 @@ class VrptwGraph:
         return travel_path, travel_distance, vehicle_num
 
     def _cal_nearest_next_index(
-        self, index_to_visit, current_index, current_load, current_time, travel_distance
+        self, index_to_visit, current_index, current_load, current_time, current_distance
     ):
         nearest_ind = None
         nearest_distance = None
@@ -189,7 +194,7 @@ class VrptwGraph:
             if current_load + self.nodes[next_index].demand > self.vehicle_capacity:
                 continue
 
-            if travel_distance + self.node_dist_mat[current_index][next_index] > self.max_dist:
+            if current_distance + self.node_dist_mat[current_index][next_index] > self.max_dist:
                 continue
 
             dist = self.node_dist_mat[current_index][next_index]
@@ -198,7 +203,7 @@ class VrptwGraph:
 
             if (
                 current_time
-                + dist * 3                  ### Assuming the speed to be 20kmph, hence to convert dist to minutes, dist / 20 * 60
+                + dist                ### Assuming the speed to be 60kmph, hence to convert dist to minutes, dist / 60 * 60
                 + wait_time
                 + self.node_dist_mat[next_index][0]
                 > self.nodes[0].due_time
@@ -206,9 +211,9 @@ class VrptwGraph:
                 # print("##############################################")
                 continue
 
-            if current_time + dist * 3 > self.nodes[next_index].due_time:
-                # print("**********************************************")
-                continue
+            # if current_time + dist * 3 > self.nodes[next_index].due_time:
+            #     # print("**********************************************")
+            #     continue
 
             if (
                 nearest_distance is None
